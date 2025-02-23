@@ -25,5 +25,14 @@ RUN apt-get update && \
     apt-get install -y docker-ce-cli && \
     rm -rf /var/lib/apt/lists/*
 
-# Switch back to jenkins user
+# Create required directories and set permissions
+RUN mkdir -p /home/jenkins/.ssh && \
+    chown -R jenkins:jenkins /home/jenkins/.ssh && \
+    chmod 700 /home/jenkins/.ssh
+
+# Switch to jenkins user
 USER jenkins
+
+EXPOSE 22
+
+ENTRYPOINT ["setup-sshd"]
