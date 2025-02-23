@@ -3,6 +3,9 @@ source ../../core/build.sh
 source ../../core/backup.sh
 source ../../core/run.sh
 
+# safety when an error occurs
+set -e
+
 # build and deploy
 DockerBuild jenkins $(pwd)/data/Dockerfile
 
