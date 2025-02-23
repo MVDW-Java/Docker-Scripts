@@ -2,7 +2,7 @@ DockerBackup() {
     # Default values
     local CONTAINER_NAME=""
     local BACKUP_NAME=""
-    local BACKUP_PATH="../backups/storage"
+    local BACKUP_PATH="../../backups/storage"
     local COMPRESS=true
 
     # Help function
@@ -57,8 +57,8 @@ DockerBackup() {
 
     # Check if container exists
     if ! docker ps -a --format '{{.Names}}' | grep -q "^${CONTAINER_NAME}$"; then
-        echo "Error: Container '$CONTAINER_NAME' not found"
-        return 1
+        echo "Backup: Container '$CONTAINER_NAME' not found, continue without a backup"
+        return 0
     fi
 
     # Create backup directory if it doesn't exist
