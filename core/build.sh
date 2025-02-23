@@ -15,11 +15,12 @@ DockerBuild() {
     echo "Building docker image: $dockerName"
     echo "Using Dockerfile at: $dockerFilePath"
 
+    # Build new image first
+    docker build -t "$dockerName" -f "$dockerFilePath" .
+
     # Remove old image if it exists
     if docker image inspect "$dockerName" >/dev/null 2>&1; then
-        echo "Removing old image: $dockerName"
-        docker rmi "$dockerName"
+        echo "Removing old image with same name (if any)"
+        docker images | grep "$dockerName" | grep -v "$(docker images --quiet "$dockerName":latest)" | awk '{print $3}' | xargs -r docker rmi
     fi
-
-    docker build -t "$dockerName" -f "$dockerFilePath" .
 }
