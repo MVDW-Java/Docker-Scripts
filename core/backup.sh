@@ -59,7 +59,7 @@ DockerBackup() {
     if ! docker ps -a --format '{{.Names}}' | grep -q "^${CONTAINER_NAME}$"; then
         echo "Error: Container '$CONTAINER_NAME' not found"
         return 1
-    }
+    fi
 
     # Create backup directory if it doesn't exist
     mkdir -p "$BACKUP_PATH"
