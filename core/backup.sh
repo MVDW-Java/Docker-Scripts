@@ -78,16 +78,27 @@ DockerBackup() {
     echo "Backup path: $BACKUP_PATH"
 
     # Get volume information
-    local VOLUMES=$(docker inspect --format='{{range .Mounts}}{{.Source}}:{{.Destination}};{{end}}' "$CONTAINER_NAME")
+    local VOLUMES=$(docker inspect --format='{{range .Mounts}}{{.Type}}:{{.Name}}:{{.Source}}:{{.Destination}};{{end}}' "$CONTAINER_NAME")
 
     # Backup each volume
     IFS=';' read -ra VOLUME_ARRAY <<< "$VOLUMES"
     for volume in "${VOLUME_ARRAY[@]}"; do
         if [ -n "$volume" ]; then
-            IFS=':' read -r source destination <<< "$volume"
-            if [ -d "$source" ]; then
-                local volume_name=$(basename "$destination")
-                echo "Backing up volume: $volume_name"
+            IFS=':' read -r type name source destination <<< "$volume"
+            local volume_name=$(basename "$destination")
+            echo "Processing volume: $volume_name (Type: $type)"
+
+            if [ "$type" = "volume" ]; then
+                # Handle named volumes
+                echo "Backing up named volume: $name"
+                docker run --rm \
+                    -v "$name":"$destination" \
+                    -v "$TEMP_DIR":/backup \
+                    alpine \
+                    tar cf "/backup/$volume_name.tar" -C "$destination" .
+            elif [ "$type" = "bind" ] && [ -d "$source" ]; then
+                # Handle bind mounts
+                echo "Backing up bind mount: $source"
                 cp -r "$source" "$TEMP_DIR/$volume_name"
             fi
         fi
