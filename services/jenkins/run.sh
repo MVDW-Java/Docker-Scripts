@@ -1,5 +1,9 @@
-source ../../core/main.sh
+# include required scripts
+source ../../core/build.sh
+source ../../core/backup.sh
+source ../../core/run.sh
 
+# build and deploy
 DockerBuild jenkins $(pwd)/data/Dockerfile
 
 DockerBackup -n jenkins
