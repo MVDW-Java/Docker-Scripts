@@ -20,7 +20,7 @@ DockerRun \
   -v "jenkins-data:/var/jenkins_home" \
   -v "/var/run/docker.sock:/var/run/docker.sock" \
   -v "/certs/client:/certs/client:ro" \
-  -e "JAVA_OPTS=-Dhudson.security.csrf.GlobalCrumbIssuerConfiguration.DISABLE_CSRF_PROTECTION=true" \
+  #-e "JAVA_OPTS=-Dhudson.security.csrf.GlobalCrumbIssuerConfiguration.DISABLE_CSRF_PROTECTION=true" \
   -e "JENKINS_OPTS=--prefix=/" \
   --group-add "$(getent group docker | cut -d: -f3)" \
   -d
