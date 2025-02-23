@@ -30,6 +30,11 @@ RUN mkdir -p /home/jenkins/.ssh && \
     chown -R jenkins:jenkins /home/jenkins/.ssh && \
     chmod 700 /home/jenkins/.ssh
 
+# Ensure /etc/environment is writable by jenkins user
+RUN touch /etc/environment && \
+    chown jenkins:jenkins /etc/environment && \
+    chmod 644 /etc/environment
+
 # Switch to jenkins user
 USER jenkins
 
