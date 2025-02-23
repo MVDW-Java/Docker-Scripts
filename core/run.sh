@@ -106,6 +106,14 @@ DockerRun() {
         fi
     fi
 
+    # Ensure network exists
+    if [[ -n "$NETWORK" ]]; then
+        if ! docker network ls | grep -q "$NETWORK"; then
+            echo "Creating network: $NETWORK"
+            docker network create "$NETWORK"
+        fi
+    fi
+
     # Build docker run command
     local CMD="docker run"
 
