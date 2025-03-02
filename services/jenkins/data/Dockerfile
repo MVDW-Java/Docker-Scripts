@@ -11,7 +11,6 @@ RUN echo "deb [arch=$(dpkg --print-architecture) \
 RUN apt-get update && apt-get install -y docker-ce-cli
 USER jenkins
 RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
-ENV NVM_DIR="~/.nvm"
-RUN . "$NVM_DIR/nvm.sh" && nvm install 22
+RUN . nvm install 22 | bash
 
 #RUN jenkins-plugin-cli --plugins "blueocean:1.25.3 docker-workflow:1.28"
