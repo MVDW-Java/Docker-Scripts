@@ -1,9 +1,9 @@
-DockerBuild() {
-    local dockerName=$1
-    local dockerFilePath=$2
+docker_build() {
+    dockerName=$1
+    dockerFilePath=$2
 
     if [ -z "$dockerName" ] || [ -z "$dockerFilePath" ]; then
-        echo "Usage: DockerBuild <docker-name> <dockerfile-path>"
+        echo "Usage: docker_build <docker-name> <dockerfile-path>"
         return 1
     fi
 

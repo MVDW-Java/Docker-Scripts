@@ -1,17 +1,17 @@
 DockerRun() {
     # Default values
-    local IMAGE=""
-    local CONTAINER_NAME=""
-    local PORTS=()
-    local VOLUMES=()
-    local ENV_VARS=()
-    local NETWORK=""
-    local DETACH=false
-    local REMOVE=false
-    local INTERACTIVE=false
-    local TTY=false
-    local RESTART=""
-    local GROUP_ADD=()
+    IMAGE=""
+    CONTAINER_NAME=""
+    PORTS=""
+    VOLUMES=""
+    ENV_VARS=""
+    NETWORK=""
+    DETACH=false
+    REMOVE=false
+    INTERACTIVE=false
+    TTY=false
+    RESTART=""
+    GROUP_ADD=""
 
     # Help function
     ShowHelp() {
@@ -31,7 +31,7 @@ DockerRun() {
     }
 
     # Parse arguments
-    while [[ $# -gt 0 ]]; do
+    while [ $# -gt 0 ]; do
         case "$1" in
             -i|--image)
                 IMAGE="$2"
@@ -42,15 +42,27 @@ DockerRun() {
                 shift 2
                 ;;
             -p|--port)
-                PORTS+=("$2")
+                if [ -z "$PORTS" ]; then
+                    PORTS="$2"
+                else
+                    PORTS="$PORTS $2"
+                fi
                 shift 2
                 ;;
             -v|--volume)
-                VOLUMES+=("$2")
+                if [ -z "$VOLUMES" ]; then
+                    VOLUMES="$2"
+                else
+                    VOLUMES="$VOLUMES $2"
+                fi
                 shift 2
                 ;;
             -e|--env)
-                ENV_VARS+=("$2")
+                if [ -z "$ENV_VARS" ]; then
+                    ENV_VARS="$2"
+                else
+                    ENV_VARS="$ENV_VARS $2"
+                fi
                 shift 2
                 ;;
             --network)
@@ -75,11 +87,15 @@ DockerRun() {
                 shift 2
                 ;;
             --group-add)
-                GROUP_ADD+=("$2")
+                if [ -z "$GROUP_ADD" ]; then
+                    GROUP_ADD="$2"
+                else
+                    GROUP_ADD="$GROUP_ADD $2"
+                fi
                 shift 2
                 ;;
             -h|--help)
-            ShowHelp
+                ShowHelp
                 return 0
                 ;;
             *)
@@ -91,14 +107,14 @@ DockerRun() {
     done
 
     # Check if image is provided
-    if [[ -z "$IMAGE" ]]; then
+    if [ -z "$IMAGE" ]; then
         echo "Error: Image name is required"
         ShowHelp
         return 1
     fi
 
     # Stop and remove existing container if it exists
-    if [[ -n "$CONTAINER_NAME" ]]; then
+    if [ -n "$CONTAINER_NAME" ]; then
         if docker ps -a --format '{{.Names}}' | grep -q "^${CONTAINER_NAME}$"; then
             echo "Stopping and removing existing container: $CONTAINER_NAME"
             docker stop "$CONTAINER_NAME" >/dev/null 2>&1
@@ -107,7 +123,7 @@ DockerRun() {
     fi
 
     # Ensure network exists
-    if [[ -n "$NETWORK" ]]; then
+    if [ -n "$NETWORK" ]; then
         if ! docker network ls | grep -q "$NETWORK"; then
             echo "Creating network: $NETWORK"
             docker network create "$NETWORK"
@@ -115,43 +131,43 @@ DockerRun() {
     fi
 
     # Build docker run command
-    local CMD="docker run"
+    CMD="docker run"
 
     # Add container name if specified
-    [[ -n "$CONTAINER_NAME" ]] && CMD+=" --name $CONTAINER_NAME"
+    [ -n "$CONTAINER_NAME" ] && CMD="$CMD --name $CONTAINER_NAME"
 
     # Add ports
-    for port in "${PORTS[@]}"; do
-        CMD+=" -p $port"
+    for port in $PORTS; do
+        CMD="$CMD -p $port"
     done
 
     # Add volumes
-    for volume in "${VOLUMES[@]}"; do
-        CMD+=" -v $volume"
+    for volume in $VOLUMES; do
+        CMD="$CMD -v $volume"
     done
 
     # Add environment variables
-    for env_var in "${ENV_VARS[@]}"; do
-        CMD+=" -e $env_var"
+    for env_var in $ENV_VARS; do
+        CMD="$CMD -e $env_var"
     done
 
     # Add network if specified
-    [[ -n "$NETWORK" ]] && CMD+=" --network $NETWORK"
+    [ -n "$NETWORK" ] && CMD="$CMD --network $NETWORK"
 
     # Add other flags
-    [[ "$DETACH" = true ]] && CMD+=" -d"
-    [[ "$REMOVE" = true ]] && CMD+=" --rm"
-    [[ "$INTERACTIVE" = true ]] && CMD+=" -i"
-    [[ "$TTY" = true ]] && CMD+=" -t"
+    [ "$DETACH" = true ] && CMD="$CMD -d"
+    [ "$REMOVE" = true ] && CMD="$CMD --rm"
+    [ "$INTERACTIVE" = true ] && CMD="$CMD -i"
+    [ "$TTY" = true ] && CMD="$CMD -t"
 
-    [[ -n "$RESTART" ]] && CMD+=" --restart $RESTART"
-        for group in "${GROUP_ADD[@]}"; do
-            CMD+=" --group-add $group"
-        done
+    [ -n "$RESTART" ] && CMD="$CMD --restart $RESTART"
 
+    for group in $GROUP_ADD; do
+        CMD="$CMD --group-add $group"
+    done
 
     # Add image name
-    CMD+=" $IMAGE"
+    CMD="$CMD $IMAGE"
 
     # Execute the command
     echo "Executing: $CMD"
