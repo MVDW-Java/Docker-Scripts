@@ -1,4 +1,4 @@
-docker_build() {
+DockerBuild() {
     dockerName=$1
     dockerFilePath=$2
 
