@@ -29,12 +29,18 @@ RUN apt-get update && \
 RUN mkdir -p /home/jenkins/.ssh && \
     mkdir -p /run/sshd && \
     chown -R jenkins:jenkins /home/jenkins/.ssh && \
-    chmod 700 /home/jenkins/.ssh
+    chmod 700 /home/jenkins/.ssh && \
+    chown -R jenkins:jenkins /run/sshd
 
 # Ensure /etc/environment is writable by jenkins user
 RUN touch /etc/environment && \
     chown jenkins:jenkins /etc/environment && \
     chmod 644 /etc/environment
+
+# Create and set permissions for SSHD PID directory
+RUN mkdir -p /var/run/sshd && \
+    chmod 755 /var/run/sshd && \
+    chown jenkins:jenkins /var/run/sshd
 
 # Switch to jenkins user
 USER jenkins
