@@ -27,6 +27,7 @@ RUN apt-get update && \
 
 # Create required directories and set permissions
 RUN mkdir -p /home/jenkins/.ssh && \
+    mkdir -p /run/sshd && \
     chown -R jenkins:jenkins /home/jenkins/.ssh && \
     chmod 700 /home/jenkins/.ssh
 
