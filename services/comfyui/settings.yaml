@@ -1,0 +1,21 @@
+custom_nodes:
+    - https://github.com/ltdrdata/ComfyUI-Manager.git
+
+# Server Settings
+server:
+    # Maximum pixels allowed for processing
+    max_image_pixels: 8294400
+    # Server port
+    port: 8188
+    # Listen on all interfaces
+    listen: "0.0.0.0"
+    # Enable preview
+    enable_preview: true
+
+# Optimization Settings
+optimization:
+    # Use attention preprocessing
+    attention_preprocessing: true
+    # VAE settings
+    vae_settings:
+        precision: "fp16"

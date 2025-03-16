@@ -33,6 +33,7 @@ CMD=(DockerRun \
     -v "comfyui-models:/app/models" \
     -v "comfyui-input:/app/input" \
     -v "comfyui-output:/app/output" \
+    -v "comfyui-custom-nodes:/app/custom_nodes" \
     -e "HSA_OVERRIDE_GFX_VERSION=10.3.0" \
     -e "PYTORCH_ROCM_ARCH=gfx1030" \
     --group-add "$(getent group docker | cut -d: -f3)" \

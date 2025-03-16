@@ -1,5 +1,5 @@
 # Multi-stage build to determine GPU support
-FROM ubuntu:22.04 as gpu-detect
+FROM ubuntu:22.04 AS gpu-detect
 
 RUN apt-get update && apt-get install -y \
     pciutils \
@@ -10,7 +10,7 @@ RUN chmod +x /detect-gpu.sh
 RUN /detect-gpu.sh > /gpu-vendor
 
 # Builder stage for Python packages
-FROM ubuntu:22.04 as builder
+FROM ubuntu:22.04 AS builder
 
 # Install Python and pip
 RUN apt-get update && apt-get install -y \
@@ -63,11 +63,14 @@ RUN apt-get update && apt-get install -y \
 # Copy Python packages from builder
 COPY --from=builder /python-packages /python-packages
 
-# Create app directory
+# Create app directory and clone ComfyUI
 WORKDIR /app
+RUN git clone https://github.com/comfyanonymous/ComfyUI.git /tmp/comfyui && \
+    cp -r /tmp/comfyui/. . && \
+    rm -rf /tmp/comfyui
 
-# Clone ComfyUI repository
-RUN git clone https://github.com/comfyanonymous/ComfyUI.git .
+# Copy settings file
+COPY settings.yaml /app/config.yaml
 
 # Install ComfyUI requirements
 RUN pip3 install --no-cache-dir -r requirements.txt \
