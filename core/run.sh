@@ -23,6 +23,7 @@ DockerRun() {
         echo "  -p, --port           Port mapping (can be used multiple times) format: host:container"
         echo "  -v, --volume         Volume mapping (can be used multiple times) format: host:container"
         echo "  -e, --env           Environment variable (can be used multiple times) format: KEY=VALUE"
+        echo "  --device          Device mapping (can be used multiple times)"
         echo "  --network            Network to connect to"
         echo "  -d, --detach         Run container in background"
         echo "  -r, --rm             Remove container when it exits"
@@ -62,6 +63,14 @@ DockerRun() {
                     ENV_VARS="$2"
                 else
                     ENV_VARS="$ENV_VARS $2"
+                fi
+                shift 2
+                ;;
+            --device)
+                if [ -z "$DEVICES" ]; then
+                    DEVICES="$2"
+                else
+                    DEVICES="$DEVICES $2"
                 fi
                 shift 2
                 ;;
@@ -149,6 +158,10 @@ DockerRun() {
     # Add environment variables
     for env_var in $ENV_VARS; do
         CMD="$CMD -e $env_var"
+    done
+
+    for device in $DEVICES; do
+        CMD="$CMD --device $device"
     done
 
     # Add network if specified
